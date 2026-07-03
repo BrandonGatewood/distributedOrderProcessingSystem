@@ -2,4 +2,10 @@
   <Folder Name="/Services/">
     <Project Path="Services/OrderService/OrderService.csproj" />
   </Folder>
+  <Folder Name="/Services/OrderService/">
+    <Project Path="Services/OrderService/OrderService.Api/OrderService.Api.csproj" />
+    <Project Path="Services/OrderService/OrderService.Application/OrderService.Application.csproj" />
+    <Project Path="Services/OrderService/OrderService.Domain/OrderService.Domain.csproj" />
+    <Project Path="Services/OrderService/OrderService.Infrastructure/OrderService.Infrastructure.csproj" />
+  </Folder>
 </Solution>
