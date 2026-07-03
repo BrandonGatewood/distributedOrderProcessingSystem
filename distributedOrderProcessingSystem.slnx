@@ -1,7 +1,5 @@
 <Solution>
-  <Folder Name="/Services/">
-    <Project Path="Services/OrderService/OrderService.csproj" />
-  </Folder>
+  <Folder Name="/Services/" />
   <Folder Name="/Services/OrderService/">
     <Project Path="Services/OrderService/OrderService.Api/OrderService.Api.csproj" />
     <Project Path="Services/OrderService/OrderService.Application/OrderService.Application.csproj" />
