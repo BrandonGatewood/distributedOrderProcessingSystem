@@ -2,6 +2,7 @@ using OrderService.Application.DTOs.Requests;
 using OrderService.Application.DTOs.Responses;
 using OrderService.Application.Interfaces;
 using OrderService.Domain.Entities;
+using OrderService.Domain.Enums;
 
 namespace OrderService.Application.Services;
 
@@ -9,15 +10,26 @@ public class OrderApplicationService : IOrderApplicationService
 {
     public CreateOrderResponse CreateOrderAsync(CreateOrderRequest request)
     {
+        Guid orderId = Guid.NewGuid();
+
+        var orderItems = request.OrderItems.Select(i => new OrderItem
+        {
+                Id = Guid.NewGuid(),
+                OrderId = orderId,
+                ProductId = i.ProductId,
+                ProductName = i.ProductName,
+                UnitPrice = i.UnitPrice,
+                Quantity = i.Quantity
+        }).ToList();
+
         // create order
         var order = new Order
         {
-            Id = Guid.NewGuid(),
+            Id = orderId,
             UserId = request.UserId,
-            ProductId = request.ProductId,
-            ProductName = request.ProductName,
-            Quantity = request.Quantity,
-            Status = "Pending",
+            OrderItems = orderItems,
+            TotalAmount = orderItems.Sum(i => i.LineTotal),
+            Status = OrderStatus.Pending,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -28,11 +40,15 @@ public class OrderApplicationService : IOrderApplicationService
         // return response
         return new CreateOrderResponse
         {
-            ProductName = order.ProductName,
-            Quantity = order.Quantity,
-            Status = order.Status,
+            OrderItems = order.OrderItems.Select(i => new CreateOrderItemsResponse
+            {
+                ProductName = i.ProductName,
+                UnitPrice = i.UnitPrice,
+                Quantity = i.Quantity
+            }).ToList(),
+            TotalPrice = order.TotalAmount,
+            Status = order.Status.ToString(),
             CreatedAt = order.CreatedAt
         };
-        
     }
 }
