@@ -29,8 +29,6 @@ public class OrderDbContext(DbContextOptions<OrderDbContext> options) : DbContex
             entity.HasKey(i => i.Id);
             entity.Property(i => i.UnitPrice)
                 .HasPrecision(18, 2);
-            entity.Property(i => i.LineTotal)
-                .HasPrecision(18, 2);
         });
     }
 }

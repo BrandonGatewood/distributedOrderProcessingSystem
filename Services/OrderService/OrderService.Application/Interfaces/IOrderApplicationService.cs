@@ -5,5 +5,5 @@ namespace OrderService.Application.Interfaces;
 
 public interface IOrderApplicationService
 {
-    CreateOrderResponse CreateOrderAsync(CreateOrderRequest request);
+    Task<CreateOrderResponse> CreateOrderAsync(CreateOrderRequest request);
 }

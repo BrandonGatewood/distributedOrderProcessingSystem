@@ -6,9 +6,11 @@ using OrderService.Domain.Enums;
 
 namespace OrderService.Application.Services;
 
-public class OrderApplicationService : IOrderApplicationService 
+public class OrderApplicationService(IOrderRepository orderRepository) : IOrderApplicationService 
 {
-    public CreateOrderResponse CreateOrderAsync(CreateOrderRequest request)
+    private readonly IOrderRepository _orderRepository = orderRepository;
+
+    public async Task<CreateOrderResponse> CreateOrderAsync(CreateOrderRequest request)
     {
         Guid orderId = Guid.NewGuid();
 
@@ -34,6 +36,7 @@ public class OrderApplicationService : IOrderApplicationService
         };
 
         // save order to db
+        await _orderRepository.AddAsync(order);
 
         // send order to message broker
 
