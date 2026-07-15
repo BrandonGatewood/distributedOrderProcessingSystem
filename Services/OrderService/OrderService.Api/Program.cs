@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using OrderService.Application.Interfaces;
 using OrderService.Application.Services;
 using OrderService.Infrastructure.Data;
+using OrderService.Infrastructure.Messaging;
 using OrderService.Infrastructure.Repositories;
 
 
@@ -28,6 +29,17 @@ builder.Services.AddDbContext<OrderDbContext>(options =>
     });
 });
 
+builder.Services
+    .AddOptions<RabbitMqSettings>()
+    .Bind(builder.Configuration.GetSection("RabbitMQ"))
+    .Validate(settings =>
+    {
+        return !string.IsNullOrEmpty(settings.Host)
+            && !string.IsNullOrEmpty(settings.Username)
+            && !string.IsNullOrEmpty(settings.Password);
+    }, "RabbitMQ configuration is invalid.")
+    .ValidateOnStart();
+builder.Services.AddScoped<IEventPublisher, RabbitMqPublisher>();
 
 var app = builder.Build();
 app.MapControllers();
