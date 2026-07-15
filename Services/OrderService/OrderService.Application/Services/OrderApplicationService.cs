@@ -1,3 +1,4 @@
+using Messaging.Contracts.Events;
 using OrderService.Application.DTOs.Requests;
 using OrderService.Application.DTOs.Responses;
 using OrderService.Application.Interfaces;
@@ -6,12 +7,13 @@ using OrderService.Domain.Enums;
 
 namespace OrderService.Application.Services;
 
-public class OrderApplicationService(IOrderRepository orderRepository) : IOrderApplicationService 
+public class OrderApplicationService(IOrderRepository orderRepository, IEventPublisher eventPublisher) : IOrderApplicationService 
 {
     private readonly IOrderRepository _orderRepository = orderRepository;
-
+    private readonly IEventPublisher _eventPublisher = eventPublisher;
     public async Task<CreateOrderResponse> CreateOrderAsync(CreateOrderRequest request)
     {
+        // Create a new order with the provided order items
         Guid orderId = Guid.NewGuid();
 
         var orderItems = request.OrderItems.Select(i => new OrderItem
@@ -24,7 +26,6 @@ public class OrderApplicationService(IOrderRepository orderRepository) : IOrderA
                 Quantity = i.Quantity
         }).ToList();
 
-        // create order
         var order = new Order
         {
             Id = orderId,
@@ -38,9 +39,21 @@ public class OrderApplicationService(IOrderRepository orderRepository) : IOrderA
         // save order to db
         await _orderRepository.AddAsync(order);
 
-        // send order to message broker
+        // create event message
+        var message = new OrderCreatedEvent
+        {
+            OrderId = order.Id,
+            UserId = order.UserId,
+            Items = order.OrderItems.Select(i => new OrderItemEvent
+            {
+                ProductId = i.ProductId,
+                Quantity = i.Quantity
+            }).ToList()
+        };
 
-        // return response
+        // publish event 
+        await _eventPublisher.PublishAsync("order.created", message);
+
         return new CreateOrderResponse
         {
             OrderItems = order.OrderItems.Select(i => new CreateOrderItemsResponse
