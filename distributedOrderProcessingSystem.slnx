@@ -6,4 +6,7 @@
     <Project Path="Services/OrderService/OrderService.Domain/OrderService.Domain.csproj" />
     <Project Path="Services/OrderService/OrderService.Infrastructure/OrderService.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/Shared/">
+    <Project Path="Shared/Messaging.Contracts/Messaging.Contracts.csproj" />
+  </Folder>
 </Solution>
