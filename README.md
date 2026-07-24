@@ -102,10 +102,17 @@ Pending
 ## Future Improvements
 
 Inventory Service
+
 Payment Service
+
 Notification Service
+
 Retry handling
+
 Dead-letter queues
+
 Idempotent message processing
+
 Distributed tracing
+
 Docker Compose setup
