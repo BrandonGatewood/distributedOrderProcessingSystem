@@ -30,7 +30,7 @@ flowchart LR
     OrderService -->|Publish Order Event| RabbitMQ
 ```
 
-Example event:
+Example 'OrderCreatedEvent':
 
 ```json
 {
