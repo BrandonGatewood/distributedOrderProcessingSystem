@@ -1,4 +1,4 @@
-# distributedOrderProcessingSystem
+# Distributed Order Processing System
 
 A distributed order processing system built to explore microservices architecture, 
 event-driven communication, and asynchronous messaging using RabbitMQ.
@@ -7,7 +7,6 @@ The goal of this project is to learn how independent services communicate throug
 a message broker and handle distributed workflows.
 
 ## Tech Stack
-
 - .NET
 - RabbitMQ
 - PostgreSQL
@@ -16,11 +15,18 @@ a message broker and handle distributed workflows.
 ---
 
 # Architecture
-
 The system uses an event-driven microservice architecture.
 
-## Order Service
+```mermaid
+flowchart LR
+    Client --> OrderService
+    OrderService --> RabbitMQ
+    RabbitMQ --> InventoryService
+    InventoryService --> RabbitMQ
+    RabbitMQ --> OrderService
+```
 
+## Order Service
 The Order Service is responsible for creating orders and publishing order events.
 
 ```mermaid
@@ -29,6 +35,7 @@ flowchart LR
     OrderService --> DB[(Order Database)]
     OrderService -->|OrderCreatedEvent| RabbitMQ
 ```
+
 Example `OrderCreatedEvent`:
 
 ```json
@@ -51,7 +58,6 @@ Example `OrderCreatedEvent`:
 ```
 
 ## Inventory Service
-
 The Inventory Service will consume `OrderCreatedEvent`, verify inventory availability, and publish an inventory processed event.
 
 ```mermaid
@@ -69,9 +75,15 @@ Example `InventoryProcessedEvent`:
     "Status": "Failed"
 }
 ```
+```json
+{
+    "UserId": "8b3f1d7e-6a9a-4d9f-bb8f-8c6b8f4c2e11",
+    "OrderId": "9j3d1z7q-6a9a-4d9f-ba7f-8c6c8f4c2e22",
+    "Status": "Completed"
+}
+```
 
 ## Order Status Update
-
 The Order Service will consume `InventoryProcessedEvent` and update the order status.
 
 ```mermaid
@@ -81,19 +93,11 @@ flowchart LR
 ```
 
 ## Future Improvements
-
-Inventory Service
-
-Payment Service
-
-Notification Service
-
-Retry handling
-
-Dead-letter queues
-
-Idempotent message processing
-
-Distributed tracing
-
-Docker Compose setup
+- [ ] Inventory Service
+- [ ] Payment Service
+- [ ] Notification Service
+- [ ] Retry handling
+- [ ] Dead-letter queues
+- [ ] Idempotent message processing
+- [ ] Distributed tracing
+- [ ] Docker Compose setup
