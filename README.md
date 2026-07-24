@@ -19,28 +19,15 @@ a message broker and handle distributed workflows.
 
 The system uses an event-driven microservice architecture.
 
-Current workflow:
+## Current Workflow
 
-Client
-
-|
-
-v
-
-Order Service
-
-|
-
-v
-
-RabbitMQ
-
-|
-
-v
-
-Inventory Service (planned)
-
+```mermaid
+flowchart TD
+    Client --> OrderService["Order Service"]
+    OrderService --> DB[(Order Database)]
+    OrderService --> RabbitMQ
+    RabbitMQ --> InventoryService["Inventory Service (Planned)"]
+```
 
 Services communicate asynchronously through RabbitMQ events rather than direct service-to-service calls.
 
