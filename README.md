@@ -19,39 +19,16 @@ a message broker and handle distributed workflows.
 
 The system uses an event-driven microservice architecture.
 
-## Current Workflow
-
-```mermaid
-flowchart TD
-    Client --> OrderService
-    OrderService --> DB[(Order Database)]
-    OrderService --> RabbitMQ
-
-    RabbitMQ --> InventoryService
-
-    InventoryService -->|Inventory Available| RabbitMQ
-    InventoryService -->|Inventory Unavailable| RabbitMQ
-
-    RabbitMQ --> OrderService
-
-    OrderService -->|Completed| CompletedOrder[Completed]
-    OrderService -->|Failed| FailedOrder[Failed]
-```
-
-Services communicate asynchronously through RabbitMQ events rather than direct service-to-service calls.
-
----
-
 ## Order Service
 
 The Order Service is responsible for creating orders and publishing order events.
 
-Flow:
-
-1. Receive order request
-2. Create order with `Pending` status
-3. Save order to database
-4. Publish `OrderCreated` event to RabbitMQ
+```mermaid
+flowchart LR
+    Client -->|Create Order| OrderService
+    OrderService -->|Save Pending Order| DB[(Order Database)]
+    OrderService -->|Publish Order Event| RabbitMQ
+```
 
 Example event:
 
@@ -79,30 +56,13 @@ Example event:
 
 The Inventory Service will consume OrderCreated events and verify inventory availability.
 
-Flow:
+```mermaid
+flowchart LR
+    RabbitMQ -->|OrderCreated| InventoryService
+    InventoryService --> InventoryDB[(Inventory Database)]
+    InventoryService -->|InventoryConfirmed| RabbitMQ
+```
 
-OrderCreated Event
-        |
-        v
-Inventory Service
-        |
-        +--> Available
-        |        |
-        |        v
-        |   Order Completed
-        |
-        +--> Unavailable
-                 |
-                 v
-            Order Failed
-
-## Order Status Flow
-
-Pending
-   |
-   +---- Completed
-   |
-   +---- Failed
 
 ## Future Improvements
 
