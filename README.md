@@ -22,14 +22,23 @@ The system uses an event-driven microservice architecture.
 Current workflow:
 
 Client
+
 |
+
 v
+
 Order Service
+
 |
+
 v
+
 RabbitMQ
+
 |
+
 v
+
 Inventory Service (planned)
 
 
