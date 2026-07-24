@@ -23,10 +23,19 @@ The system uses an event-driven microservice architecture.
 
 ```mermaid
 flowchart TD
-    Client --> OrderService["Order Service"]
+    Client --> OrderService
     OrderService --> DB[(Order Database)]
     OrderService --> RabbitMQ
-    RabbitMQ --> InventoryService["Inventory Service (Planned)"]
+
+    RabbitMQ --> InventoryService
+
+    InventoryService -->|Inventory Available| RabbitMQ
+    InventoryService -->|Inventory Unavailable| RabbitMQ
+
+    RabbitMQ --> OrderService
+
+    OrderService -->|Completed| CompletedOrder[Completed]
+    OrderService -->|Failed| FailedOrder[Failed]
 ```
 
 Services communicate asynchronously through RabbitMQ events rather than direct service-to-service calls.
