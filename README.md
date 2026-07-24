@@ -30,25 +30,24 @@ flowchart LR
     OrderService -->|Publish Order Event| RabbitMQ
 ```
 
-Example 'OrderCreatedEvent':
+Example `OrderCreatedEvent`:
 
 ```json
 {
-   "userId": "8b3f1d7e-6a9a-4d9f-bb8f-8c6b8f4c2e11",
-   "orderItems": [
-      {
-         "productId": "2a5c9e8f-7c41-4e2a-9b52-4d1e8c3f9012",
-         "productName": "Mechanical Keyboard",
-         "unitPrice": 89.99,
-         "quantity": 1
-      },
-      {
-         "productId": "6f9e2b44-3a1d-4c6b-a6d7-5e8f90123456",
-         "productName": "Wireless Mouse",
-         "unitPrice": 29.99,
-         "quantity": 2
-      }
-   ]
+    "UserId": "8b3f1d7e-6a9a-4d9f-bb8f-8c6b8f4c2e11",
+    "OrderId": "9j3d1z7q-6a9a-4d9f-ba7f-8c6c8f4c2e22",
+    "Items": [
+        {
+            "productId": "2a5c9e8f-7c41-4e2a-9b52-4d1e8c3f9012",
+            "unitPrice": 89.99,
+            "quantity": 1
+        },
+        {
+             "productId": "6f9e2b44-3a1d-4c6b-a6d7-5e8f90123456",
+             "unitPrice": 29.99,
+             "quantity": 2
+        }
+    ]
 }
 ```
 
@@ -58,9 +57,9 @@ The Inventory Service will consume OrderCreated events and verify inventory avai
 
 ```mermaid
 flowchart LR
-    RabbitMQ -->|OrderCreated| InventoryService
+    RabbitMQ -->|OrderCreatedEvent| InventoryService
     InventoryService --> InventoryDB[(Inventory Database)]
-    InventoryService -->|InventoryConfirmed| RabbitMQ
+    InventoryService -->|Publish OrderStatus Event| RabbitMQ
 ```
 
 
