@@ -29,7 +29,6 @@ flowchart LR
     OrderService -->|Save Pending Order| DB[(Order Database)]
     OrderService -->|Publish Order Event| RabbitMQ
 ```
-
 Example `OrderCreatedEvent`:
 
 ```json
@@ -61,7 +60,15 @@ flowchart LR
     InventoryService --> InventoryDB[(Inventory Database)]
     InventoryService -->|Publish OrderStatus Event| RabbitMQ
 ```
+Example `OrderStatusEvent`:
 
+```json
+{
+    "UserId": "8b3f1d7e-6a9a-4d9f-bb8f-8c6b8f4c2e11",
+    "OrderId": "9j3d1z7q-6a9a-4d9f-ba7f-8c6c8f4c2e22",
+    "Status": "Failed"
+}
+```
 
 ## Future Improvements
 
