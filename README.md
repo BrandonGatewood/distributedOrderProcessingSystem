@@ -76,7 +76,7 @@ The Order Service will consume `InventoryProcessedEvent` and update the order st
 
 ```mermaid
 flowchart LR
-    RabbitMQ -->|OrderStatusEvent| OrderService
+    RabbitMQ -->|InventoryProcessedEvent| OrderService
     OrderService --> DB[(Order Database)]
 ```
 
