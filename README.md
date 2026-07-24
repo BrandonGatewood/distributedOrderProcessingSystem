@@ -26,8 +26,8 @@ The Order Service is responsible for creating orders and publishing order events
 ```mermaid
 flowchart LR
     Client -->|Create Order| OrderService
-    OrderService -->|Save Pending Order| DB[(Order Database)]
-    OrderService -->|Publish Order Event| RabbitMQ
+    OrderService --> DB[(Order Database)]
+    OrderService -->|OrderCreatedEvent| RabbitMQ
 ```
 Example `OrderCreatedEvent`:
 
@@ -52,15 +52,15 @@ Example `OrderCreatedEvent`:
 
 ## Inventory Service
 
-The Inventory Service will consume OrderCreated events and verify inventory availability.
+The Inventory Service will consume `OrderCreatedEvent`, verify inventory availability, and publish inventory processed events.
 
 ```mermaid
 flowchart LR
     RabbitMQ -->|OrderCreatedEvent| InventoryService
     InventoryService --> InventoryDB[(Inventory Database)]
-    InventoryService -->|Publish OrderStatus Event| RabbitMQ
+    InventoryService -->|InventoryProcessedEvent| RabbitMQ
 ```
-Example `OrderStatusEvent`:
+Example `InventoryProcessedEvent`:
 
 ```json
 {
@@ -68,6 +68,17 @@ Example `OrderStatusEvent`:
     "OrderId": "9j3d1z7q-6a9a-4d9f-ba7f-8c6c8f4c2e22",
     "Status": "Failed"
 }
+```
+
+## Order Status Update
+
+The Order Service will consume `InventoryProcessedEvent` and update order status.
+
+```mermaid
+flowchart LR
+    flowchart LR
+    RabbitMQ -->|OrderStatusEvent| OrderService
+    OrderService --> DB[(Order Database)]
 ```
 
 ## Future Improvements
