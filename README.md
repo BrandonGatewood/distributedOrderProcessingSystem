@@ -52,7 +52,7 @@ Example `OrderCreatedEvent`:
 
 ## Inventory Service
 
-The Inventory Service will consume `OrderCreatedEvent`, verify inventory availability, and publish inventory processed events.
+The Inventory Service will consume `OrderCreatedEvent`, verify inventory availability, and publish an inventory processed event.
 
 ```mermaid
 flowchart LR
@@ -72,7 +72,7 @@ Example `InventoryProcessedEvent`:
 
 ## Order Status Update
 
-The Order Service will consume `InventoryProcessedEvent` and update order status.
+The Order Service will consume `InventoryProcessedEvent` and update the order status.
 
 ```mermaid
 flowchart LR
