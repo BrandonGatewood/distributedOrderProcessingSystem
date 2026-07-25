@@ -21,6 +21,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderApplicationService, OrderApplicationService>();
+builder.Services.AddScoped<IEventPublisher, RabbitMqPublisher>();
+builder.Services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
 builder.Services.AddDbContext<OrderDbContext>(options =>
 {
     options.UseNpgsql(connectionString, npgsqlOptions =>
