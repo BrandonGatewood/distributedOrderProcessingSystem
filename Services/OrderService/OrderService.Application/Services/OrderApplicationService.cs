@@ -1,4 +1,5 @@
 using Messaging.Contracts.Events;
+using Messaging.Contracts.RabbitMq;
 using OrderService.Application.DTOs.Requests;
 using OrderService.Application.DTOs.Responses;
 using OrderService.Application.Interfaces;
@@ -52,7 +53,7 @@ public class OrderApplicationService(IOrderRepository orderRepository, IEventPub
         };
 
         // publish event 
-        await _eventPublisher.PublishAsync("order.created", message);
+        await _eventPublisher.PublishAsync(RabbitMqConstants.OrderCreatedRoutingKey, message);
 
         return new CreateOrderResponse
         {

@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using OrderService.Application.Interfaces;
+using Messaging.Contracts.RabbitMq;
 using RabbitMQ.Client;
 
 namespace OrderService.Infrastructure.Messaging;
@@ -16,7 +17,7 @@ public class RabbitMqPublisher(IRabbitMqConnection connection) : IEventPublisher
 
         // Declare message exchange
         await channel.ExchangeDeclareAsync(
-            exchange: "order_exchange",
+            exchange: RabbitMqConstants.OrderExchange,
             type: ExchangeType.Topic,
             durable: true
         );
@@ -27,7 +28,7 @@ public class RabbitMqPublisher(IRabbitMqConnection connection) : IEventPublisher
 
         // Publish the message
         await channel.BasicPublishAsync(
-            exchange: "order_exchange",
+            exchange: RabbitMqConstants.OrderExchange,
             routingKey: routingKey,
             body: body
         );
