@@ -23,7 +23,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderApplicationService, OrderApplicationService>();
-builder.Services.AddScoped<IEventPublisher, RabbitMqPublisher>();
+builder.Services.AddScoped<IEventPublisher, EventPublisher>();
 builder.Services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
 builder.Services.AddDbContext<OrderDbContext>(options =>
 {
@@ -43,7 +43,6 @@ builder.Services
             && !string.IsNullOrEmpty(settings.Password);
     }, "RabbitMQ configuration is invalid.")
     .ValidateOnStart();
-builder.Services.AddScoped<IEventPublisher, RabbitMqPublisher>();
 
 var app = builder.Build();
 app.MapControllers();
