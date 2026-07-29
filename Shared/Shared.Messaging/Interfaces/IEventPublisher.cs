@@ -1,4 +1,4 @@
-namespace OrderService.Application.Interfaces;
+namespace Shared.Messaging.Interfaces;
 
 public interface IEventPublisher
 {

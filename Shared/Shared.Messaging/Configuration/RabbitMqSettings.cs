@@ -1,4 +1,4 @@
-namespace OrderService.Infrastructure.Messaging;
+namespace Shared.Messaging.Configuration;
 
 public class RabbitMqSettings
 {

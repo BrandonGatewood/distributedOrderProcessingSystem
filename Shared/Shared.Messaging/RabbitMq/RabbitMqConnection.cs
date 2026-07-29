@@ -1,7 +1,9 @@
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using Shared.Messaging.Interfaces;
+using Shared.Messaging.Configuration;
 
-namespace OrderService.Infrastructure.Messaging;
+namespace Shared.Messaging.RabbitMq;
 
 public class RabbitMqConnection : IRabbitMqConnection, IDisposable
 {

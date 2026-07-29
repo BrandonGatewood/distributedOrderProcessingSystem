@@ -1,10 +1,11 @@
-using Messaging.Contracts.Events;
-using Messaging.Contracts.RabbitMq;
 using OrderService.Application.DTOs.Requests;
 using OrderService.Application.DTOs.Responses;
 using OrderService.Application.Interfaces;
 using OrderService.Domain.Entities;
 using OrderService.Domain.Enums;
+using Shared.Contracts.Events;
+using Shared.Messaging.Constants;
+using Shared.Messaging.Interfaces;
 
 namespace OrderService.Application.Services;
 

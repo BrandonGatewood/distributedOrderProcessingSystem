@@ -1,10 +1,10 @@
 using System.Text;
 using System.Text.Json;
-using OrderService.Application.Interfaces;
-using Messaging.Contracts.RabbitMq;
+using Shared.Messaging.Interfaces;
+using Shared.Messaging.Constants;
 using RabbitMQ.Client;
 
-namespace OrderService.Infrastructure.Messaging;
+namespace Shared.Messaging.RabbitMq;
 
 public class RabbitMqPublisher(IRabbitMqConnection connection) : IEventPublisher
 {

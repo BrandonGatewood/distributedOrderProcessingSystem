@@ -3,8 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using OrderService.Application.Interfaces;
 using OrderService.Application.Services;
 using OrderService.Infrastructure.Data;
-using OrderService.Infrastructure.Messaging;
 using OrderService.Infrastructure.Repositories;
+using Shared.Messaging.Configuration;
+using Shared.Messaging.Interfaces;
+using Shared.Messaging.RabbitMq;
 
 
 Env.Load("../../../.env");

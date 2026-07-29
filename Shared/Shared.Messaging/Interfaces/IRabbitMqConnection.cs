@@ -1,6 +1,6 @@
 using RabbitMQ.Client;
 
-namespace OrderService.Infrastructure.Messaging;
+namespace Shared.Messaging.Interfaces;
 
 public interface IRabbitMqConnection
 {
