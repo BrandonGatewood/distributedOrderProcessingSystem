@@ -54,7 +54,7 @@ public class OrderApplicationService(IOrderRepository orderRepository, IEventPub
         };
 
         // publish event 
-        await _eventPublisher.PublishAsync(RabbitMqConstants.OrderCreatedRoutingKey, message);
+        await _eventPublisher.PublishAsync(RabbitMqConstants.OrderExchange, RabbitMqConstants.OrderCreatedRoutingKey, message);
 
         return new CreateOrderResponse
         {
