@@ -5,6 +5,13 @@
     <Project Path="Services/OrderService/OrderService.Domain/OrderService.Domain.csproj" />
     <Project Path="Services/OrderService/OrderService.Infrastructure/OrderService.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/Services/InventoryService/">
+    <Project Path="Services/InventoryService/Inventory.Worker/Inventory.Worker.csproj" />
+    <Project Path="Services/InventoryService/Inventory.Application/Inventory.Application.csproj" />
+    <Project Path="Services/InventoryService/Inventory.Domain/Inventory.Domain.csproj" />
+    <Project Path="Services/InventoryService/Inventory.Infrastructure/Inventory.Infrastructure.csproj" />
+  </Folder>
+
   <Folder Name="/Shared/">
     <Project Path="Shared/Shared.Contracts/Shared.Contracts.csproj" />
     <Project Path="Shared/Shared.Messaging/Shared.Messaging.csproj" />
