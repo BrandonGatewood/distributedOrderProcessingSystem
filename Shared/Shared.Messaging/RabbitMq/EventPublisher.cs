@@ -28,7 +28,7 @@ public class EventPublisher(IRabbitMqConnection connection) : IEventPublisher
 
         // Publish the message
         await channel.BasicPublishAsync(
-            exchange: RabbitMqConstants.OrderExchange,
+            exchange: exchange,
             routingKey: routingKey,
             body: body
         );
