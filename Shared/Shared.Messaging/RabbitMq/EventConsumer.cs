@@ -3,11 +3,14 @@ using System.Text.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Shared.Messaging.Interfaces;
+using Microsoft.Extensions.Logging;
+
 
 namespace Shared.Messaging.RabbitMq;
 
-public class EventConsumer(IRabbitMqConnection connection) : IEventConsumer
+public class EventConsumer(ILogger<EventConsumer> logger, IRabbitMqConnection connection) : IEventConsumer
 {
+    private readonly ILogger<EventConsumer> _logger = logger;
     private readonly IRabbitMqConnection _connection = connection;
 
     public async Task ConsumeAsync<T>(string exchange, string queue, string routingKey, T message, Func<T, Task> callback, CancellationToken cancellationToken)
@@ -45,22 +48,46 @@ public class EventConsumer(IRabbitMqConnection connection) : IEventConsumer
         // Message recieved
         consumer.ReceivedAsync += async (_, args) =>
         {
-            var body = args.Body.ToArray();
-
-            var json = Encoding.UTF8.GetString(body);
-
-            var message = JsonSerializer.Deserialize<T>(json);
-
-            if (message != null)
+            try
             {
-                await callback(message);
-            }
+                var body = args.Body.ToArray();
 
-            // Successfully processed message
-            await channel.BasicAckAsync(
-                deliveryTag: args.DeliveryTag,
-                multiple: false
-            );
+                var json = Encoding.UTF8.GetString(body);
+
+                var message = JsonSerializer.Deserialize<T>(json);
+
+                if (message == null)
+                {
+                    await channel.BasicNackAsync(
+                        args.DeliveryTag,
+                        multiple: false,
+                        requeue: false
+                    );
+
+                    return;
+                }
+
+                await callback(message);
+
+                await channel.BasicAckAsync(
+                    args.DeliveryTag,
+                    multiple: false
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Error processing message from queue {Queue}",
+                    queue
+                );
+
+                await channel.BasicNackAsync(
+                    args.DeliveryTag,
+                    multiple: false,
+                    requeue: true
+                );
+            }
         };
 
         // Start listening
