@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Application.DTOs.Requests;
-using OrderService.Application.DTOs.Responses;
 using OrderService.Application.Interfaces;
 namespace OrderService.Api.Controllers;
 
