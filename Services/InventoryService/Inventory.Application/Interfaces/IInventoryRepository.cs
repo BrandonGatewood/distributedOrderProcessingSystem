@@ -4,6 +4,5 @@ namespace Inventory.Application.Interfaces;
 
 public interface IInventoryRepository
 {
-    Task<InventoryItem?> GetByProductIdAsync(Guid productId);
-    Task UpdateAsync(InventoryItem inventoryItem);
+    Task<bool> TryReserveOrderAsync(IEnumerable<InventoryItem> items, CancellationToken cancellationToken);
 }

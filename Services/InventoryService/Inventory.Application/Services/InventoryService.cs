@@ -1,72 +1,23 @@
 using Inventory.Application.Interfaces;
+using Inventory.Domain.Entities;
 using Shared.Contracts.Events;
-using Shared.Messaging.Constants;
-using Shared.Messaging.Interfaces;
 
 namespace Inventory.Application.Services;
 
-public class InventoryService(IInventoryRepository inventoryRepository, IEventPublisher eventPublisher) : IInventoryService
+public class InventoryService(IInventoryRepository inventoryRepository) : IInventoryService
 {
     private readonly IInventoryRepository _inventoryRepository = inventoryRepository;
-    private readonly IEventPublisher _eventPublisher = eventPublisher;
     
-    public async Task ProcessInventory(OrderCreatedEvent order)
+   public async Task<bool> ProcessInventoryAsync(OrderCreatedEvent order, CancellationToken cancellationToken)
     {
-        // read db
-        foreach(var item in order.Items)
-        {
-            var inventoryItem = await _inventoryRepository
-                .GetByProductIdAsync(item.ProductId);
-
-            if (inventoryItem == null)
+        var items = order.Items
+            .Select(x => new InventoryItem
             {
-                await _eventPublisher.PublishAsync(
-                    RabbitMqConstants.InventoryExchange,
-                    RabbitMqConstants.InventoryFailedRoutingKey,
-                    new InventoryFailedEvent 
-                    {
-                        OrderId = order.OrderId,
-                        Reason = $"Product {item.ProductId} was not found in inventory."
-                    }
-                );
+                ProductId = x.ProductId,
+                Quantity = x.Quantity
+            })
+            .ToList();
 
-                return;
-            }
-
-            if (inventoryItem.Quantity < item.Quantity)
-            {
-                await _eventPublisher.PublishAsync(
-                    RabbitMqConstants.InventoryExchange,
-                    RabbitMqConstants.InventoryFailedRoutingKey,
-                    new InventoryFailedEvent
-                    {
-                        OrderId = order.OrderId,
-                        Reason = $"Insufficient stock for product {item.ProductId}."
-                    }
-                );
-
-                return;
-            } 
-        }
-
-        foreach (var item in order.Items)
-        {
-            var inventoryItem = await _inventoryRepository
-                .GetByProductIdAsync(item.ProductId);
-
-            inventoryItem!.Quantity -= item.Quantity;
-
-            await _inventoryRepository.UpdateAsync(inventoryItem);
-        }
-
-        // Tell Order Service inventory was successfully reserved
-        await _eventPublisher.PublishAsync(
-            RabbitMqConstants.InventoryExchange,
-            RabbitMqConstants.InventoryReservedRoutingKey,
-            new InventoryReservedEvent
-            {
-                OrderId = order.OrderId
-            }
-        );
-    }
+        return await _inventoryRepository.TryReserveOrderAsync(items, cancellationToken);
+    } 
 }

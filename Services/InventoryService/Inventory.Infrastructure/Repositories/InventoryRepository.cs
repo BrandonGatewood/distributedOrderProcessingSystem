@@ -9,14 +9,50 @@ public class InventoryRepository(InventoryDbContext context) : IInventoryReposit
 {
     private readonly InventoryDbContext _context = context;
 
-    public async Task<InventoryItem?> GetByProductIdAsync(Guid productId)
+    public async Task<bool> TryReserveOrderAsync(IEnumerable<InventoryItem> items, CancellationToken cancellationToken)
     {
-        return await _context.InventoryItems.FirstOrDefaultAsync(i => i.ProductId == productId);
-    }
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
-    public async Task UpdateAsync(InventoryItem inventoryItem)
-    {
-        _context.InventoryItems.Update(inventoryItem);
-        await _context.SaveChangesAsync();
+        // Always lock products in the same order.
+        var orderedItems = items
+            .OrderBy(x => x.ProductId)
+            .ToList();
+
+        foreach (var item in orderedItems)
+        {
+            var inventory = await _context.InventoryItems
+                .FromSqlInterpolated($"""
+                    SELECT *
+                    FROM "InventoryItems"
+                    WHERE "ProductId" = {item.ProductId}
+                    FOR UPDATE
+                    """)
+                .SingleOrDefaultAsync(cancellationToken);
+
+            // Product doesn't exist.
+            if (inventory is null)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                return false;
+            }
+
+            // Not enough inventory.
+            if (inventory.Quantity < item.Quantity)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                return false;
+            }
+
+            // Reserve the inventory.
+            inventory.Quantity -= item.Quantity;
+        }
+
+        // Persist all inventory changes.
+        await _context.SaveChangesAsync(cancellationToken);
+
+        // Make all changes permanent.
+        await transaction.CommitAsync(cancellationToken);
+
+        return true;
     }
 }
