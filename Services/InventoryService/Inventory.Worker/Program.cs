@@ -42,7 +42,7 @@ builder.Services
     }, "RabbitMQ configuration is invalid.")
     .ValidateOnStart();
 
-builder.Services.AddHostedService<InventoryWorker>();
+builder.Services.AddHostedService<InventoryEventWorker>();
 
 var host = builder.Build();
 host.Run();

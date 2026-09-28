@@ -5,9 +5,9 @@ using Shared.Messaging.Interfaces;
 
 namespace Inventory.Worker;
 
-public class InventoryWorker(ILogger<InventoryWorker> logger, IEventConsumer eventConsumer, IServiceScopeFactory serviceScopeFactory) : BackgroundService
+public class InventoryEventWorker(ILogger<InventoryEventWorker> logger, IEventConsumer eventConsumer, IServiceScopeFactory serviceScopeFactory) : BackgroundService
 {
-    private readonly ILogger<InventoryWorker> _logger = logger;
+    private readonly ILogger<InventoryEventWorker> _logger = logger;
     private readonly IEventConsumer _eventConsumer = eventConsumer;
     private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
 
