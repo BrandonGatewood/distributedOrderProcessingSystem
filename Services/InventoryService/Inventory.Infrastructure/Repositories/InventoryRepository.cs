@@ -15,7 +15,7 @@ public class InventoryRepository(InventoryDbContext context) : IInventoryReposit
 
         // Always lock products in the same order.
         var orderedItems = items
-            .OrderBy(x => x.ProductId)
+            .OrderBy(x => x.Id)
             .ToList();
 
         foreach (var item in orderedItems)
@@ -24,7 +24,7 @@ public class InventoryRepository(InventoryDbContext context) : IInventoryReposit
                 .FromSqlInterpolated($"""
                     SELECT *
                     FROM "InventoryItems"
-                    WHERE "ProductId" = {item.ProductId}
+                    WHERE "ProductId" = {item.Id}
                     FOR UPDATE
                     """)
                 .SingleOrDefaultAsync(cancellationToken);
