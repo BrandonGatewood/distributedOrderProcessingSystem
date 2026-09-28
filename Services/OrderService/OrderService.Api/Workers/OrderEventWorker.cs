@@ -5,11 +5,10 @@ using Shared.Messaging.Interfaces;
 
 namespace OrderService.Api.Workers;
 
-public class OrderEventWorker(ILogger<OrderEventWorker> logger, IEventConsumer eventConsumer, IServiceScopeFactory serviceScopeFactory)
+public class OrderEventWorker(ILogger<OrderEventWorker> logger, IServiceScopeFactory serviceScopeFactory)
     : BackgroundService
 {
     private readonly ILogger<OrderEventWorker> _logger = logger;
-    private readonly IEventConsumer _eventConsumer = eventConsumer;
 
     private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
 
@@ -17,7 +16,11 @@ public class OrderEventWorker(ILogger<OrderEventWorker> logger, IEventConsumer e
     {
         _logger.LogInformation("Order event worker starting...");
 
-        var reservedTask = _eventConsumer.ConsumeAsync<InventoryReservedEvent>(
+        using var scope = _serviceScopeFactory.CreateScope();
+
+        var eventConsumer = scope.ServiceProvider.GetRequiredService<IEventConsumer>();
+
+        var reservedTask = eventConsumer.ConsumeAsync<InventoryReservedEvent>(
             exchange: RabbitMqConstants.InventoryExchange,
             queue: RabbitMqConstants.OrderInventoryReservedQueue,
             routingKey: RabbitMqConstants.InventoryReservedRoutingKey,
@@ -29,7 +32,7 @@ public class OrderEventWorker(ILogger<OrderEventWorker> logger, IEventConsumer e
             cancellationToken: stoppingToken
         );
 
-        var failedTask = _eventConsumer.ConsumeAsync<InventoryFailedEvent>(
+        var failedTask = eventConsumer.ConsumeAsync<InventoryFailedEvent>(
             exchange: RabbitMqConstants.InventoryExchange,
             queue: RabbitMqConstants.OrderInventoryFailedQueue,
             routingKey: RabbitMqConstants.InventoryFailedRoutingKey,

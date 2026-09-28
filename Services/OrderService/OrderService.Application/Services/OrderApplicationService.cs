@@ -58,6 +58,7 @@ public class OrderApplicationService(IOrderRepository orderRepository, IEventPub
 
         return new CreateOrderResponse
         {
+            Id = order.Id,
             OrderItems = order.OrderItems.Select(i => new CreateOrderItemsResponse
             {
                 ProductName = i.ProductName,
@@ -67,6 +68,20 @@ public class OrderApplicationService(IOrderRepository orderRepository, IEventPub
             TotalPrice = order.TotalAmount,
             Status = order.Status.ToString(),
             CreatedAt = order.CreatedAt
+        };
+    }
+
+    public async Task<GetOrderStatusResponse?> GetOrderStatusAsync(Guid orderId)
+{
+        var order = await _orderRepository.GetByIdAsync(orderId);
+
+        if (order is null)
+            return null;
+
+        return new GetOrderStatusResponse
+        {
+            OrderId = order.Id,
+            Status = order.Status.ToString()
         };
     }
 }

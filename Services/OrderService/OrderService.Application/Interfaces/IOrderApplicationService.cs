@@ -6,4 +6,5 @@ namespace OrderService.Application.Interfaces;
 public interface IOrderApplicationService
 {
     Task<CreateOrderResponse> CreateOrderAsync(CreateOrderRequest request);
+    Task<GetOrderStatusResponse?> GetOrderStatusAsync(Guid orderId);
 }

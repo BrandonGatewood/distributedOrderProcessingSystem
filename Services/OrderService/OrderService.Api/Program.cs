@@ -25,6 +25,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderApplicationService, OrderApplicationService>();
 builder.Services.AddScoped<IEventPublisher, EventPublisher>();
+builder.Services.AddScoped<IEventConsumer, EventConsumer>();
 builder.Services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
 builder.Services.AddHostedService<OrderEventWorker>();
 builder.Services.AddDbContext<OrderDbContext>(options =>

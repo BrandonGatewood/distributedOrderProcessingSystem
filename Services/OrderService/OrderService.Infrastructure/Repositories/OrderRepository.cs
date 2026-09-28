@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using OrderService.Application.Interfaces;
 using OrderService.Domain.Entities;
 using OrderService.Infrastructure.Data;
@@ -12,5 +13,12 @@ public class OrderRepository(OrderDbContext context) : IOrderRepository
     {
         await _context.Orders.AddAsync(order);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<Order?> GetByIdAsync(Guid orderId)
+    {
+        return await _context.Orders
+            .AsNoTracking()
+            .FirstOrDefaultAsync(o => o.Id == orderId);
     }
 }

@@ -16,4 +16,15 @@ public class OrderControllers(IOrderApplicationService orderApplicationService) 
 
         return Ok(await _orderService.CreateOrderAsync(request));
     }
+
+    [HttpGet("{orderId}/status")]
+    public async Task<IActionResult> GetOrderStatus(Guid orderId)
+    {
+        var response = await _orderService.GetOrderStatusAsync(orderId);
+
+        if (response is null)
+            return NotFound();
+
+        return Ok(response);
+    } 
 }
