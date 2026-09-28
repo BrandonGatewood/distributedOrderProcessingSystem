@@ -11,7 +11,12 @@ public class InventoryRepository(InventoryDbContext context) : IInventoryReposit
 
     public async Task<bool> TryReserveOrderAsync(IEnumerable<InventoryItem> items, CancellationToken cancellationToken)
     {
-        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        var strategy = _context.Database.CreateExecutionStrategy();
+
+    return await strategy.ExecuteAsync(async () =>
+    {
+        await using var transaction =
+            await _context.Database.BeginTransactionAsync(cancellationToken);
 
         // Always lock products in the same order.
         var orderedItems = items
@@ -54,5 +59,6 @@ public class InventoryRepository(InventoryDbContext context) : IInventoryReposit
         await transaction.CommitAsync(cancellationToken);
 
         return true;
-    }
+    });
+    } 
 }
