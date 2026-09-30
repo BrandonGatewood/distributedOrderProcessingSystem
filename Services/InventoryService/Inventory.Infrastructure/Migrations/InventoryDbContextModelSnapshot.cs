@@ -36,7 +36,24 @@ namespace Inventory.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProductId")
+                        .IsUnique();
+
                     b.ToTable("InventoryItems");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            ProductId = new Guid("22222222-2222-2222-2222-222222222222"),
+                            Quantity = 10
+                        },
+                        new
+                        {
+                            Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            ProductId = new Guid("33333333-3333-3333-3333-333333333333"),
+                            Quantity = 10
+                        });
                 });
 #pragma warning restore 612, 618
         }

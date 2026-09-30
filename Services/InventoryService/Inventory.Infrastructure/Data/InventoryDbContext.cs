@@ -7,12 +7,13 @@ public class InventoryDbContext(DbContextOptions<InventoryDbContext> options) : 
     public DbSet<InventoryItem> InventoryItems => Set<InventoryItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-    base.OnModelCreating(modelBuilder);
-
-    modelBuilder.Entity<InventoryItem>(entity =>
     {
-        entity.HasKey(i => i.Id);
-    });
-}
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<InventoryItem>(entity =>
+        {
+            entity.HasKey(i => i.Id);
+            entity.HasIndex(i => i.ProductId).IsUnique();
+        });
+    }
 }

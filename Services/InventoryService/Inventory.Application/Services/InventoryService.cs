@@ -13,7 +13,8 @@ public class InventoryService(IInventoryRepository inventoryRepository) : IInven
         var items = order.Items
             .Select(x => new InventoryItem
             {
-                Id = x.ProductId,
+                Id = Guid.NewGuid(),
+                ProductId = x.ProductId,
                 Quantity = x.Quantity
             })
             .ToList();
