@@ -28,6 +28,11 @@ public class OrderEventWorker(ILogger<OrderEventWorker> logger, IServiceScopeFac
             callback: async inventoryReserved =>
             {
                 _logger.LogInformation("Order inventory reserved success.");
+
+                using var scope = _serviceScopeFactory.CreateScope();
+                var orderService = scope.ServiceProvider.GetRequiredService<IOrderApplicationService>(); 
+
+                await orderService.CompleteOrderAsync(inventoryReserved.OrderId);
             },
             cancellationToken: stoppingToken
         );
@@ -40,6 +45,11 @@ public class OrderEventWorker(ILogger<OrderEventWorker> logger, IServiceScopeFac
             callback: async inventoryFailed =>
             {
                 _logger.LogInformation("Order inventory reserved failed.");
+
+                using var scope = _serviceScopeFactory.CreateScope();
+                var orderService = scope.ServiceProvider.GetRequiredService<IOrderApplicationService>(); 
+
+                await orderService.CancelOrderAsync(inventoryFailed.OrderId);
             },
             cancellationToken: stoppingToken
         );

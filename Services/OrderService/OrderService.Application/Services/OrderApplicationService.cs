@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using OrderService.Application.DTOs.Requests;
 using OrderService.Application.DTOs.Responses;
 using OrderService.Application.Interfaces;
@@ -9,8 +10,9 @@ using Shared.Messaging.Interfaces;
 
 namespace OrderService.Application.Services;
 
-public class OrderApplicationService(IOrderRepository orderRepository, IEventPublisher eventPublisher) : IOrderApplicationService 
+public class OrderApplicationService(ILogger<OrderApplicationService> logger, IOrderRepository orderRepository, IEventPublisher eventPublisher) : IOrderApplicationService 
 {
+    private readonly ILogger<OrderApplicationService> _logger = logger;
     private readonly IOrderRepository _orderRepository = orderRepository;
     private readonly IEventPublisher _eventPublisher = eventPublisher;
     public async Task<CreateOrderResponse> CreateOrderAsync(CreateOrderRequest request)
@@ -83,5 +85,29 @@ public class OrderApplicationService(IOrderRepository orderRepository, IEventPub
             OrderId = order.Id,
             Status = order.Status.ToString()
         };
+    }
+
+    public async Task CancelOrderAsync(Guid orderId)
+    {
+        var updated = await _orderRepository.UpdateStatusAsync(orderId, OrderStatus.Cancelled);
+
+        if (!updated)
+        {
+            _logger.LogWarning(
+                "Order {OrderId} was not completed because it was not pending.",
+                orderId);
+        }
+    }
+
+    public async Task CompleteOrderAsync(Guid orderId)
+    {
+        var updated = await _orderRepository.UpdateStatusAsync(orderId, OrderStatus.Completed);
+
+        if (!updated)
+        {
+            _logger.LogWarning(
+                "Order {OrderId} was not completed because it was not pending.",
+                orderId);
+        }
     }
 }
